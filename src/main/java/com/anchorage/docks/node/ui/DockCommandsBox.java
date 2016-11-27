@@ -16,20 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.anchorage.docks.node.ui;
 
 import com.anchorage.docks.containers.SingleDockContainer;
 import com.anchorage.docks.node.DockNode;
 import com.anchorage.docks.stations.DockSubStation;
+import javafx.animation.RotateTransition;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 /**
  *
@@ -39,7 +39,14 @@ public class DockCommandsBox extends HBox {
 
     private Button closeButton;
     private Button maximizeRestoreButton;
+
+    private Runnable openAction = null;
+    private Runnable hideAction = null;
+    private Pane externalContent;
+
     private final DockNode node;
+    private Button menuButton;
+    private boolean isMenuOpen;
 
     public DockCommandsBox(DockNode node) {
         this.node = node;
@@ -53,8 +60,7 @@ public class DockCommandsBox extends HBox {
         if (node instanceof DockSubStation || !node.closeableProperty().get()) {
             closeButton.setMouseTransparent(true);
             closeButton.setOpacity(0.4);
-        }
-        else {
+        } else {
             closeButton.setMouseTransparent(false);
             closeButton.setOpacity(1);
         }
@@ -65,12 +71,9 @@ public class DockCommandsBox extends HBox {
                 maximizeRestoreButton.setOpacity(0.4);
             }
 
-        }
-        else {
-            if (node.maximizableProperty().get()) {
-                maximizeRestoreButton.setMouseTransparent(false);
-                maximizeRestoreButton.setOpacity(1);
-            }
+        } else if (node.maximizableProperty().get()) {
+            maximizeRestoreButton.setMouseTransparent(false);
+            maximizeRestoreButton.setOpacity(1);
         }
     }
 
@@ -78,8 +81,7 @@ public class DockCommandsBox extends HBox {
         if (node.maximizableProperty().get() && node.floatingProperty().get()) {
             maximizeRestoreButton.setMouseTransparent(false);
             maximizeRestoreButton.setOpacity(1);
-        }
-        else {
+        } else {
             maximizeRestoreButton.setMouseTransparent(true);
             maximizeRestoreButton.setOpacity(0.4);
         }
@@ -88,6 +90,7 @@ public class DockCommandsBox extends HBox {
 
     private void createCloseButton() {
         Image closeImage = new Image("close.png");
+
         closeButton = new Button() {
             @Override
             public void requestFocus() {
@@ -96,6 +99,7 @@ public class DockCommandsBox extends HBox {
 
         closeButton.setGraphic(new ImageView(closeImage));
         closeButton.getStyleClass().add("docknode-command-button-close");
+
         closeButton.setOnAction(e -> {
 
             if (node.getCloseRequestHandler() != null) {
@@ -108,7 +112,7 @@ public class DockCommandsBox extends HBox {
             }
 
         });
-
+        
         node.closeableProperty().addListener((observer, oldValue, newValue) -> changeCommandsState());
         node.containerProperty().addListener((observer, oldValue, newValue) -> changeCommandsState());
         node.floatingProperty().addListener((observer, oldValue, newValue) -> changeStateForFloatingState());
@@ -133,8 +137,7 @@ public class DockCommandsBox extends HBox {
 
             if (newValue) {
                 maximizeRestoreButton.setGraphic(new ImageView(restoreImage));
-            }
-            else {
+            } else {
                 maximizeRestoreButton.setGraphic(new ImageView(maximizeImage));
             }
         });
@@ -148,8 +151,7 @@ public class DockCommandsBox extends HBox {
             if (newValue) {
                 maximizeRestoreButton.setMouseTransparent(false);
                 maximizeRestoreButton.setOpacity(1);
-            }
-            else {
+            } else {
                 maximizeRestoreButton.setMouseTransparent(true);
                 maximizeRestoreButton.setOpacity(0.4);
             }
@@ -157,9 +159,42 @@ public class DockCommandsBox extends HBox {
     }
 
     private void buildUI() {
-
+       
         createMaxRestoreButton();
         createCloseButton();
-
     }
+ 
+    void enableMenuButton(boolean enable) {
+        menuButton.setVisible(enable);
+    }
+
+    boolean isMenuButtonEnable() {
+        return menuButton.isVisible();
+    }
+ 
+    private void showContent(Point2D localToScreen) {
+        Popover popover = new Popover(this, externalContent);
+        popover.show(localToScreen.getX(), localToScreen.getY());
+    }
+
+    void notifyCloseAction() {
+        if (isMenuOpen) {
+            isMenuOpen = false;
+
+            RotateTransition rotate = new RotateTransition(Duration.seconds(0.2), menuButton.getGraphic());
+            rotate.setToAngle(0);
+            rotate.play();
+
+            hideAction.run();
+        }
+    }
+
+    void notifyOpenAction() {
+        RotateTransition rotate = new RotateTransition(Duration.seconds(0.2), menuButton.getGraphic());
+        rotate.setToAngle(90);
+        rotate.play();
+
+        openAction.run();
+    }
+
 }

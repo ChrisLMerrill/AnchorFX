@@ -16,11 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.anchorage.docks.containers.common;
 
 import com.anchorage.docks.containers.interfaces.DockContainableComponent;
@@ -43,8 +39,7 @@ public class DockCommons {
 
     public static DockSplitterContainer createSplitter(Node existNode, Node newNode, DockNode.DockPosition position, double percentage) {
         DockSplitterContainer splitter = createEmptySplitter();
-
-        
+ 
         if (position == DockNode.DockPosition.BOTTOM || position == DockNode.DockPosition.TOP) {
             splitter.setOrientation(Orientation.VERTICAL);
         }
@@ -57,10 +52,11 @@ public class DockCommons {
 
         if (position == DockNode.DockPosition.BOTTOM || position == DockNode.DockPosition.RIGHT) {
             splitter.getItems().addAll(existNode, newNode);
-        } else {
+        }
+        else {
             splitter.getItems().addAll(newNode, existNode);
-        } 
-        
+        }
+
         splitter.getStyleClass().add("docknode-split-pane");
         splitter.setDividerPositions(percentage);
         return splitter;
@@ -75,12 +71,12 @@ public class DockCommons {
         if (existNode instanceof DockNode && newNode instanceof DockNode) {
             DockNode existDockNode = (DockNode) existNode;
             DockNode newDockNode = (DockNode) newNode;
- 
+
             DockTabberContainer tabber = new DockTabberContainer();
             Tab existTabPanel = new Tab(existDockNode.getContent().titleProperty().get());
             Tab newTabPanel = new Tab(newDockNode.getContent().titleProperty().get());
-            
-            existTabPanel.setOnCloseRequest(event->{
+
+            existTabPanel.setOnCloseRequest(event -> {
 
                 if (existDockNode.getCloseRequestHandler() == null || existDockNode.getCloseRequestHandler().canClose()) {
                     existDockNode.undock();
@@ -89,14 +85,15 @@ public class DockCommons {
 
             });
 
-            newTabPanel.setOnCloseRequest(event->{
+            newTabPanel.setOnCloseRequest(event -> {
+
                 if (newDockNode.getCloseRequestHandler() == null || newDockNode.getCloseRequestHandler().canClose()) {
-                   newDockNode.undock();
-                   event.consume();
+                    newDockNode.undock();
+                    event.consume();
                 }
 
             });
-            
+
             existTabPanel.closableProperty().bind(existDockNode.closeableProperty());
             newTabPanel.closableProperty().bind(newDockNode.closeableProperty());
 
@@ -110,13 +107,13 @@ public class DockCommons {
             newContainableComponent.setParentContainer(tabber);
 
             tabber.getTabs().addAll(existTabPanel, newTabPanel);
-            
+
             tabber.getStyleClass().add("docknode-tab-pane");
-            
+
             newDockNode.ensureVisibility();
-            
+
             return tabber;
-        }  
+        }
         return null;
     }
 }

@@ -45,7 +45,7 @@ import javafx.scene.layout.StackPane;
  */
 public final class DockUIPanel extends Pane {
 
-    public static final double BAR_HEIGHT = 30;
+    public static final double BAR_HEIGHT = 25;
 
     private Node nodeContent;
     private Label titleLabel;
@@ -69,6 +69,8 @@ public final class DockUIPanel extends Pane {
 
     public DockUIPanel(String title, Node nodeContent, boolean subStationStype, Image imageIcon) {
 
+        getStylesheets().add("anchorfx.css");
+        
         this.subStationStype = subStationStype;
 
         Objects.requireNonNull(nodeContent);
@@ -92,7 +94,7 @@ public final class DockUIPanel extends Pane {
         commandsBox = new DockCommandsBox(node);
         barPanel.getChildren().add(commandsBox);
 
-        commandsBox.layoutXProperty().bind(barPanel.prefWidthProperty().subtract(commandsBox.getChildren().size() * 30 + 20));
+        commandsBox.layoutXProperty().bind(barPanel.prefWidthProperty().subtract(commandsBox.getChildren().size() * 30 + 10));
         commandsBox.setLayoutY(0);
 
         titleLabel.prefWidthProperty().bind(commandsBox.layoutXProperty().subtract(10));
@@ -180,16 +182,15 @@ public final class DockUIPanel extends Pane {
         String titleTextStyle = (!subStationStype) ? "docknode-title-text" : "substation-title-text";
         
         iconView = new ImageView(iconImage);
-        iconView.setFitWidth(20);
-        iconView.setFitHeight(20);
+        iconView.setFitWidth(15);
+        iconView.setFitHeight(15);
         iconView.setPreserveRatio(false);
         iconView.setSmooth(true);
         iconView.relocate(1,(BAR_HEIGHT-iconView.getFitHeight()) / 2);
-        
-
+         
         titleLabel.getStyleClass().add(titleTextStyle);
         barPanel.getChildren().addAll(iconView,titleLabel);
-        titleLabel.relocate(25, 7);
+        titleLabel.relocate(25, 5);
 
         contentPanel = new StackPane();
         contentPanel.getStyleClass().add("docknode-content-panel");
@@ -225,5 +226,9 @@ public final class DockUIPanel extends Pane {
     public Node getNodeContent() {
         return nodeContent;
     }
-
+ 
+    public boolean isMenuButtonEnable(){
+        return commandsBox.isMenuButtonEnable();
+    }
+ 
 }

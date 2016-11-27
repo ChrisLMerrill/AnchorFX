@@ -16,14 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.anchorage.docks.containers.interfaces;
 
 import com.anchorage.docks.node.DockNode;
+import com.anchorage.docks.stations.DockStation;
 import javafx.scene.Node;
 
 /**
@@ -42,4 +39,5 @@ public interface DockContainer extends DockContainableComponent {
     public void removeNode(Node node);
 
     public boolean isDockVisible(DockNode node);
+     
 }

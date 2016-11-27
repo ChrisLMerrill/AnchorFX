@@ -50,6 +50,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Window;
 
@@ -301,9 +302,11 @@ public class DockNode extends StackPane implements DockContainableComponent {
         }
 
         station.add(this);
-        makeNodeActiveOnFloatableStage(owner, x, y);
+        stageFloatable = new StageFloatable(this, owner, x, y);
+        stageFloatable.show();
         stageFloatable.setWidth(width);
         stageFloatable.setHeight(height);
+        floatingProperty.set(true);
         this.station.set((DockStation) station);
     }
 
@@ -380,14 +383,16 @@ public class DockNode extends StackPane implements DockContainableComponent {
             return;
         }
 
+        boolean isFloating = floatingProperty.get();
+
         restore();
 
         if (getParentContainer() != null) {
             getParentContainer().undock(this);
             station.get().remove(this);
-        } else if (floatingProperty.get()) {
-            closeFloatingStage();
+        } else if (isFloating) {
             station.get().remove(this);
+            station.set(null);
         }
     }
 
@@ -443,7 +448,6 @@ public class DockNode extends StackPane implements DockContainableComponent {
             }
 
         }
-
     }
 
     private void moveStateToFullScreen() {
@@ -475,4 +479,10 @@ public class DockNode extends StackPane implements DockContainableComponent {
         }
 
     }
+ 
+    public boolean isMenuButtonEnable() {
+        return content.isMenuButtonEnable();
+    }
+ 
+ 
 }
